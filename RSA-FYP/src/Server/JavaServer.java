@@ -29,6 +29,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import Utility.SHA1;
+
+
 import java.util.*;
 import Utility.AES;
 import java.math.BigInteger;
@@ -42,7 +44,7 @@ public class JavaServer {
 	public static BufferedReader[] inFromClient;
 	public static DataOutputStream[] outToClient;
 	public static Map<Integer, AES> AESKeys = new HashMap<Integer, AES>();
-
+	public static Map<Integer, String> rsakeys = new HashMap<Integer, String>();
 	public static String password;
 
 	public static void main(String[] args) throws Exception {
@@ -342,6 +344,8 @@ class SThread extends Thread {
 						}
 						System.out.println();
 						String en = rsa.RSAEncrypt(SKey, new BigInteger(E), new BigInteger(N));
+						
+						JavaServer.rsakeys.put(srcid, E+"|"+N);
 						System.out.println("session key " + SKey);
 						System.out.println("encrypt " + en);
 
@@ -351,7 +355,25 @@ class SThread extends Thread {
 						outToClient[srcid].writeBytes("denied\n");
 						outToClient[srcid].flush();
 					}
-				} else {
+				}else if (str[0].equals("Attacker")) {
+					
+					
+					String keys ="";
+					int b =JavaServer.rsakeys.size() ;
+				
+					for (int i = 0 ; i < b; i++) {
+						System.out.print( JavaServer.rsakeys.get(i)+ "|");
+						keys+=JavaServer.rsakeys.get(i)+ "|";
+					}
+					System.out.println("");
+					
+					
+					outToClient[srcid].writeBytes("granted,"+ keys +"\n");
+					outToClient[srcid].flush();
+				}
+				
+				
+				else {
 					System.out.println("From Client " + srcid + ": " + clientSentence);
 					Canvas_Demo.ta.append("From Client " + srcid + ": " + clientSentence + "\n");
 

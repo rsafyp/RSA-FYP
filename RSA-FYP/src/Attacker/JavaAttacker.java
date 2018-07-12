@@ -1,4 +1,4 @@
-package Client;
+package Attacker;
 import Utility.RSA;
 
 import java.awt.BorderLayout;
@@ -35,7 +35,7 @@ import Server.JavaServer;
 import Utility.SHA1;
 import Utility.AES;
 
-public class JavaClient {
+public class JavaAttacker {
 	public static DatagramSocket ds;
 	private LoginView loginView;
 	private DataOutputStream outToServer;
@@ -46,7 +46,7 @@ public class JavaClient {
 	private CThread write;
 	private CThread read;
 	private String ipaddress;
-	public JavaClient() throws Exception {
+	public JavaAttacker() throws Exception {
 
 		// LOGIN
 		loginView = new LoginView(this);
@@ -56,7 +56,7 @@ public class JavaClient {
 
 	}
 
-	public void loginViewCallBack (String username, String password, String address) {
+	public void loginViewCallBack (String username, String address) {
 		SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
 			public Void doInBackground() throws Exception {
 				ipaddress= address;
@@ -98,7 +98,7 @@ public class JavaClient {
 				BigInteger[] privateKey = new BigInteger[2];
 				rsa.getPublicKey(publicKey);
 				rsa.getPrivateKey(privateKey);
-				String message = "Authentication|" + username + "|" + password + "|" + publicKey[0] +"|" + publicKey[1] +"\n";
+				String message = "Attacker|" + username + "|" + "|" + publicKey[0] +"|" + publicKey[1] +"\n";
 
 				try {
 					outToServer.writeBytes(message);
@@ -116,14 +116,14 @@ public class JavaClient {
 				String[] str = result.split("[,]");
 				//get AES or hash
 				if (str[0].equals("granted")) {
-					System.out.println("encrypted "+str[1]);
-
-					String dec = rsa.RSADecrypt(str[1]);
-
-					System.out.println("Session "+ dec );
 					
-					aes = new AES (Arrays.copyOf(new SHA1().hexaStringToByteArray(dec), 16));
 
+				//	String dec = rsa.RSADecrypt("lala");
+
+				
+					
+				//	aes = new AES (Arrays.copyOf(new SHA1().hexaStringToByteArray(dec), 16));
+					System.out.println(str[1].toString());
 					loginView.hideLoginView();
 				}
 				else {
@@ -168,7 +168,7 @@ public class JavaClient {
 	}
 
 	public static void main(String[] args) throws Exception {
-		new JavaClient();
+		new JavaAttacker();
 	}
 }
 
@@ -227,11 +227,11 @@ class Vidshow extends Thread {
 			do {
 
 
-				JavaClient.ds.receive(dp);
+				JavaAttacker.ds.receive(dp);
 				// decrypt using AES
 				byte[] cipher = Arrays.copyOf(rcvbyte, dp.getLength());
 				
-				cipher = JavaClient.aes.decrypt(cipher);
+				cipher = JavaAttacker.aes.decrypt(cipher);
 
 
 				ByteArrayInputStream bais = new ByteArrayInputStream(cipher);
@@ -322,6 +322,9 @@ class CThread extends Thread {
 					Vidshow.jp.repaint();
 
 
+
+					System.out.println("From : " + sentence);
+					sentence = null;
 
 				}
 			}
