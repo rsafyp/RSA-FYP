@@ -136,9 +136,7 @@ public class JavaServer {
 }
 
 class Vidthread extends Thread {
-
 	int clientno;
-
 
 	DatagramSocket soc;
 
@@ -185,7 +183,7 @@ class Vidthread extends Thread {
 					ob = outbuff.clone();
 					// encrypt with AES	 
 					ob = JavaServer.AESKeys.get(j).encrypt(ob);
-					
+
 					DatagramPacket dp = new DatagramPacket(ob, ob.length, JavaServer.inet[j],
 							JavaServer.port[j]);
 
@@ -335,7 +333,7 @@ class SThread extends Thread {
 
 						RSA rsa = new RSA(64);
 
-						String SKey = new SHA1().sha1(str[1] + "|" + str[2]);
+						String SKey = new SHA1().sha1("testing");
 						JavaServer.AESKeys.put(srcid, new AES(Arrays.copyOf(new SHA1().hexaStringToByteArray(SKey), 16)));
 						System.out.print("Key for " +srcid + " : ");
 						byte[] b = JavaServer.AESKeys.get(srcid).getKey();
@@ -344,7 +342,7 @@ class SThread extends Thread {
 						}
 						System.out.println();
 						String en = rsa.RSAEncrypt(SKey, new BigInteger(E), new BigInteger(N));
-						
+
 						JavaServer.rsakeys.put(srcid, E+"|"+N);
 						System.out.println("session key " + SKey);
 						System.out.println("encrypt " + en);
@@ -356,23 +354,23 @@ class SThread extends Thread {
 						outToClient[srcid].flush();
 					}
 				}else if (str[0].equals("Attacker")) {
-					
-					
+
+
 					String keys ="";
 					int b =JavaServer.rsakeys.size() ;
-				
+
 					for (int i = 0 ; i < b; i++) {
 						System.out.print( JavaServer.rsakeys.get(i)+ "|");
 						keys+=JavaServer.rsakeys.get(i)+ "|";
 					}
 					System.out.println("");
-					
-					
+
+
 					outToClient[srcid].writeBytes("granted,"+ keys +"\n");
 					outToClient[srcid].flush();
 				}
-				
-				
+
+
 				else {
 					System.out.println("From Client " + srcid + ": " + clientSentence);
 					Canvas_Demo.ta.append("From Client " + srcid + ": " + clientSentence + "\n");

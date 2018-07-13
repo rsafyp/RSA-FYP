@@ -61,16 +61,16 @@ public class JavaClient {
 			public Void doInBackground() throws Exception {
 				ipaddress= address;
 
-
-
 				ds = new DatagramSocket();
 				byte[] init = new byte[62000];
 				init = "givedata".getBytes();
 
 				InetAddress addr = InetAddress.getByName(ipaddress);
 
-				DatagramPacket dp = new DatagramPacket(init,init.length,addr,4321);
-
+//				DatagramPacket dp = new DatagramPacket(init,init.length,addr,4321);
+				// TODO new Attacker ver
+				DatagramPacket dp = new DatagramPacket(init, init.length, addr, 4322);
+				
 				ds.send(dp);
 
 				DatagramPacket rcv = new DatagramPacket(init, init.length);
@@ -85,7 +85,9 @@ public class JavaClient {
 
 				System.out.println(inetAddress);
 
-				clientSocket = new Socket(inetAddress, 6782);
+//				clientSocket = new Socket(inetAddress, 6782);
+				// TODO new Attacker ver
+				clientSocket = new Socket(inetAddress, 6783);
 				outToServer =
 						new DataOutputStream(clientSocket.getOutputStream());
 
